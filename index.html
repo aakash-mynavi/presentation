@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>薬物使用予測プロジェクト - プレゼンテーション</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .presentation-container {
+            width: 1280px;
+            height: 720px;
+            max-width: 100%;
+            max-height: 100%;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(to right, #2563eb, #9333ea);
+            color: white;
+            padding: 20px 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #bfdbfe;
+        }
+
+        .content {
+            flex: 1;
+            padding: 25px 40px;
+            overflow: hidden;
+        }
+
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 40px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-button:not(:disabled) {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .nav-button:not(:disabled):hover {
+            background-color: #1d4ed8;
+        }
+
+        .nav-button:disabled {
+            background-color: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .dot.active {
+            background-color: #2563eb;
+        }
+
+        .dot:not(.active) {
+            background-color: #d1d5db;
+        }
+
+        .slide {
+            display: none;
+            height: 100%;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Slide 1 - Two column layout from first file */
+        .slide1.active {
+            display: block;
+        }
+
+        .slide1-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .slide1-left {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .slide1-right {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .text-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .text-box h3 {
+            font-size: 18px;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .text-box p {
+            font-size: 14px;
+            color: #1f2937;
+            line-height: 1.4;
+        }
+
+        .box {
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .box h3 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .box p, .box li {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #1f2937;
+        }
+
+        /* Slide 2 */
+        .dataset-info {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #d97706;
+        }
+        .dataset-info h3 { color: #92400e; }
+
+        .attr-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .attr-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .attr-box h4 {
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-weight: bold;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 5px;
+        }
+
+        .attr-box ul {
+            list-style: none;
+            font-size: 14px;
+        }
+
+        .attr-box li {
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        .attr-box strong {
+            color: #1f2937;
+            margin-right: 8px;
+        }
+
+        .target-box {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border-color: #9333ea;
+        }
+        .target-box h3 { color: #6b21a8; }
+
+        /* Slide 3 */
+        .method-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .method-card {
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .method-card h4 {
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .method-card ul {
+            list-style: none;
+        }
+
+        .method-card li {
+            font-size: 14px;
+            margin-bottom: 6px;
+            padding-left: 15px;
+            position: relative;
+            color: #1f2937;
+        }
+
+        .method-card li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .stats-method {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-color: #2563eb;
+        }
+        .stats-method h4 { color: #1e3a8a; }
+        .stats-method li::before { color: #2563eb; }
+
+        .ml-method {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: #16a34a;
+        }
+        .ml-method h4 { color: #14532d; }
+        .ml-method li::before { color: #16a34a; }
+
+        .eval-method {
+            background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+            border-color: #ea580c;
+        }
+        .eval-method h4 { color: #9a3412; }
+        .eval-method li::before { color: #ea580c; }
+
+        .tools-method {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border-color: #9333ea;
+        }
+        .tools-method h4 { color: #6b21a8; }
+        .tools-method li::before { color: #9333ea; }
+
+        /* Slide 4 */
+        .results-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .results-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table thead {
+            background: linear-gradient(135deg, #312e81 0%, #4338ca 100%);
+            color: white;
+        }
+
+        .results-table th {
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .results-table th:first-child {
+            text-align: left;
+        }
+
+        .results-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .results-table td:first-child {
+            text-align: left;
+        }
+
+        .best-row {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        }
+
+        .best-row td:first-child {
+            font-weight: bold;
+            color: #166534;
+        }
+
+        .interpretation-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-color: #2563eb;
+        }
+        .interpretation-box h3 { color: #1e3a8a; }
+
+        .conclusion-box {
+            background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+        }
+
+        .conclusion-box p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .arrow {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="header">
+            <h1 id="slideTitle">プロジェクト目標</h1>
+            <p id="slideSubtitle">高精度な薬物使用予測モデルの開発</p>
+        </div>
+
+        <div class="content">
+            <!-- Slide 0 - Developer Profile -->
+            <div class="slide slide0 active">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; height: 100%; align-items: stretch;">
+                    <!-- Left Side - Profile -->
+                    <div style="display: flex; flex-direction: column; justify-content: center; gap: 20px;">
+                        <div class="box" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); border-color: #1e40af; padding: 40px; text-align: center;">
+                            <h3 style="color: white; font-size: 42px; margin-bottom: 12px; letter-spacing: 3px;">アーカシュ</h3>
+                            <p style="color: #bfdbfe; font-size: 18px; margin-bottom: 25px;">Aakash</p>
+                            <div style="height: 2px; background: rgba(255,255,255,0.3); margin: 20px 0;"></div>
+                            <p style="color: white; font-size: 22px; font-weight: 600;">データサイエンティスト</p>
+                        </div>
+
+                        <div class="box" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #d97706; padding: 30px; text-align: center;">
+                            <h3 style="color: #92400e; font-size: 20px; margin-bottom: 15px;">学歴</h3>
+                            <p style="font-size: 18px; line-height: 1.7; color: #1f2937;">
+                                <strong style="font-size: 19px;">MSc Computer Science</strong><br>
+                                <span style="color: #92400e; font-size: 16px;">Nottingham Trent University</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Right Side - Publication -->
+                    <div style="display: flex; align-items: center;">
+                        <div class="box" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #10b981; padding: 45px; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                            <h3 style="color: #065f46; font-size: 28px; margin-bottom: 25px; text-align: center;">学術出版</h3>
+                            <div style="background: white; padding: 30px; border-radius: 12px; border-left: 6px solid #10b981; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                <p style="font-size: 19px; line-height: 1.8; color: #1f2937; text-align: center;">
+                                    <strong style="font-size: 20px; display: block; margin-bottom: 15px;">研究論文</strong>
+                                    BERTを用いた<br>生物医学論文分類システム
+                                </p>
+                                <div style="height: 2px; background: linear-gradient(to right, transparent, #10b981, transparent); margin: 25px 0;"></div>
+                                <p style="text-align: center;">
+                                    <span style="color: #059669; font-weight: 700; font-size: 24px;">IGI Global</span><br>
+                                    <span style="color: #6b7280; font-size: 16px;">出版</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 1 - New design from first file -->
+            <div class="slide slide1">
+                <div class="slide1-grid">
+                    <div class="slide1-left">
+                        <div class="text-box" style="background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%); border-color: #dc2626; padding: 30px;">
+                            <h3 style="color: #991b1b; font-size: 28px; text-align: center;">プロジェクトの目標</h3>
+                            <p style="font-size: 20px; text-align: center; margin-top: 15px; font-weight: 600;">違法薬物使用者を予測する<br>機械学習モデルの開発</p>
+                        </div>
+
+                        <div class="text-box" style="background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%); border-color: #ea580c;">
+                            <h3 style="color: #9a3412; font-size: 22px; margin-bottom: 15px;">なぜ重要か</h3>
+                            <div style="font-size: 16px; line-height: 1.8;">
+                                <p style="margin-bottom: 10px;">▸ 薬物依存は深刻な社会問題</p>
+                                <p>▸ 早期発見 → 適切な介入 → 救える命</p>
+                            </div>
+                        </div>
+
+                        <div class="text-box" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: #16a34a;">
+                            <h3 style="color: #14532d; font-size: 22px; margin-bottom: 15px;">期待される効果</h3>
+                            <div style="font-size: 16px; line-height: 1.8;">
+                                <p style="margin-bottom: 10px;">▸ 高リスク個人の早期特定</p>
+                                <p>▸ 限られた資源の効果的配分</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slide1-right">
+                        <div class="text-box" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #2563eb; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 40px;">
+                            <h3 style="color: #1e3a8a; text-align: center; font-size: 26px; margin-bottom: 30px;">実現すること</h3>
+                            <div style="font-size: 18px; line-height: 2.2;">
+                                <p style="margin-bottom: 20px;">✓ 客観的なリスク評価</p>
+                                <p style="margin-bottom: 20px;">✓ 早期介入の機会増加</p>
+                                <p style="margin-bottom: 20px;">✓ 資源の最適配分</p>
+                                <p>✓ より多くの人を救う</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="slide slide2">
+                <div class="box dataset-info">
+                    <h3>データセット</h3>
+                    <p>地域リハビリテーションセンターで収集した1,877名のデータ。UCI Machine Learning Repository形式で整形。</p>
+                </div>
+
+                <div class="attr-grid">
+                    <div class="attr-box">
+                        <h4>人口統計学的特徴(3変数)</h4>
+                        <ul>
+                            <li><strong>年齢:</strong> 18-24, 25-34, 35-44, 45-54, 55-64, 65+</li>
+                            <li><strong>性別:</strong> 男性・女性</li>
+                            <li><strong>教育:</strong> 9段階(16歳以前の中退~博士号)</li>
+                        </ul>
+                    </div>
+
+                    <div class="attr-box">
+                        <h4>性格特性(7変数)</h4>
+                        <ul>
+                            <li><strong>N:</strong> 神経症的傾向(Neuroticism)</li>
+                            <li><strong>E:</strong> 外向性(Extraversion)</li>
+                            <li><strong>O:</strong> 開放性(Openness)</li>
+                            <li><strong>A:</strong> 協調性(Agreeableness)</li>
+                            <li><strong>C:</strong> 誠実性(Conscientiousness)</li>
+                            <li><strong>I:</strong> 衝動性(Impulsiveness)</li>
+                            <li><strong>S:</strong> 感覚追求(Sensation Seeking)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="box target-box">
+                    <h3>目的変数</h3>
+                    <p>過去1年以内の違法薬物使用の有無を二値分類。使用者1,171名(62.4%)、非使用者706名(37.6%)。クラス不均衡を考慮した評価指標を採用。</p>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="slide slide3">
+                <div class="method-grid">
+                    <div class="method-card stats-method">
+                        <h4>統計手法</h4>
+                        <ul>
+                            <li>探索的データ分析(EDA)</li>
+                            <li>Pearson相関係数による相関分析</li>
+                            <li>StandardScalerによる標準化処理</li>
+                            <li>層化サンプリング(80/20分割)</li>
+                            <li>主成分分析(PCA)の検討</li>
+                        </ul>
+                        <p style="margin-top: 10px; font-size: 13px; color: #6b7280;"><strong>目的:</strong> データの分布と特徴量間の関係を把握し、モデル性能を向上させる前処理を実施</p>
+                    </div>
+
+                    <div class="method-card ml-method">
+                        <h4>機械学習アルゴリズム</h4>
+                        <ul>
+                            <li>Random Forest(アンサンブル学習)</li>
+                            <li>Support Vector Machine(線形・RBFカーネル)</li>
+                            <li>K-Nearest Neighbors(距離ベース)</li>
+                            <li>Logistic Regression(線形分類器)</li>
+                        </ul>
+                        <p style="margin-top: 10px; font-size: 13px; color: #6b7280;"><strong>目的:</strong> 異なる学習原理を持つアルゴリズムを比較し、最適なモデルを選定</p>
+                    </div>
+
+                    <div class="method-card eval-method">
+                        <h4>評価手法</h4>
+                        <ul>
+                            <li>5分割層化交差検証(Stratified K-Fold)</li>
+                            <li>GridSearchCVによるハイパーパラメータ最適化</li>
+                            <li>感度・特異度の最小値最大化</li>
+                            <li>混同行列による詳細分析</li>
+                        </ul>
+                        <p style="margin-top: 10px; font-size: 13px; color: #6b7280;"><strong>目的:</strong> 偽陽性・偽陰性のバランスを考慮し、実用的な予測性能を保証</p>
+                    </div>
+
+                    <div class="method-card tools-method">
+                        <h4>使用ツール</h4>
+                        <ul>
+                            <li>Python 3.x</li>
+                            <li>scikit-learn(機械学習)</li>
+                            <li>pandas(データ処理)</li>
+                            <li>seaborn / matplotlib(可視化)</li>
+                            <li>imblearn(不均衡データ対応)</li>
+                        </ul>
+                        <p style="margin-top: 10px; font-size: 13px; color: #6b7280;"><strong>理由:</strong> 標準的なデータサイエンスライブラリで再現性と拡張性を確保</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4 -->
+            <div class="slide slide4">
+                <div class="results-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>モデル</th>
+                                <th>感度</th>
+                                <th>特異度</th>
+                                <th>精度</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="best-row">
+                                <td>Random Forest</td>
+                                <td>0.885</td>
+                                <td>0.660</td>
+                                <td>0.801</td>
+                            </tr>
+                            <tr>
+                                <td>SVM (Linear)</td>
+                                <td>0.911</td>
+                                <td>0.546</td>
+                                <td>0.774</td>
+                            </tr>
+                            <tr>
+                                <td>KNN (k=10)</td>
+                                <td>0.821</td>
+                                <td>0.645</td>
+                                <td>0.755</td>
+                            </tr>
+                            <tr>
+                                <td>Logistic Regression</td>
+                                <td>0.872</td>
+                                <td>0.617</td>
+                                <td>0.777</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="box interpretation-box">
+                    <h3>結果の解釈</h3>
+                    <p><strong>Random Forestが最高性能:</strong> 総合精度80.1%、感度88.5%(使用者の88.5%を正しく検出)、特異度66.0%(非使用者の66.0%を正しく検出)。SVMは感度が高いが特異度が低く、誤検知が多い。Random Forestは両者のバランスが最も良く、実用的なリスク評価ツールとして有効。n_estimators=480、max_depth=20で最適化。</p>
+                </div>
+
+                <div class="conclusion-box">
+                    <p>人口統計と性格特性により80.1%の精度で薬物使用リスクを予測</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button class="nav-button" id="prevBtn" onclick="prevSlide()">
+                <svg class="arrow" viewBox="0 0 24 24">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+                前へ
+            </button>
+            
+            <div class="dots" id="dots"></div>
+            
+            <button class="nav-button" id="nextBtn" onclick="nextSlide()">
+                次へ
+                <svg class="arrow" viewBox="0 0 24 24">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        const slideTitles = [
+            "開発者プロフィール",
+            "プロジェクト目標",
+            "データセット",
+            "方法論",
+            "結果と考察"
+        ];
+
+        const slideSubtitles = [
+            "Aakash - データサイエンティスト",
+            "高精度な薬物使用予測モデルの開発",
+            "地域リハビリテーションセンターで収集(UCI形式)",
+            "統計手法・機械学習アルゴリズム・評価方法",
+            "モデル性能の比較と解釈"
+        ];
+
+        const dotsContainer = document.getElementById('dots');
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.className = 'dot';
+            if (i === 0) dot.classList.add('active');
+            dot.onclick = () => goToSlide(i);
+            dotsContainer.appendChild(dot);
+        }
+
+        function updateSlide() {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('slideTitle').textContent = slideTitles[currentSlide];
+            document.getElementById('slideSubtitle').textContent = slideSubtitles[currentSlide];
+            
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        updateSlide();
+    </script>
+</body>
+</html>
